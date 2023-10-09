@@ -27,6 +27,7 @@ td {
   padding: 5px;
 }
 
+
 th {
   cursor: pointer;
   padding: 5px;
@@ -36,6 +37,10 @@ table {
   border: 9px solid rgb(122, 25, 25);
   margin: 20px;
 }
+tr :first-child{
+  text-align: left;
+}
+
 
 .toolbar {
   margin-left: 20px;

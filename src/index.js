@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 // import App from './App';
 import './App.css';
-import './table.css'
+import './table.css';
+import PropTypes from 'prop-types';
 
 const Excel = function (props) {
   console.log(props);
@@ -37,23 +38,15 @@ const Excel = function (props) {
     </div>
   );
 }
-// class Excel extends React.Component{
-//   render(){
-//     const headers = [];
-//     for (const title of this.props.headers){
-//       headers.push(<th>{title}</th>)
-//     }
-//     return (
-//       <table>
-//         <thead>
-//           <tr>{headers}</tr>
-//         </thead>
-//       </table>
-//     )
-//   }
-// }
 
-const headers = ['BOOk', 'Author', 'Language', 'Published', 'TTTTTTT', 'Sales'];
+
+
+Excel.propTypes = {
+  headers: PropTypes.arrayOf(PropTypes.string),
+  initialData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
+};
+
+const headers = [100, 'Author', 'Language', 'Published',  'Sales'];
 const data = [
   [
     'A Tale of Two Cities',
