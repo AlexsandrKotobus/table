@@ -5,17 +5,39 @@ import './index.css';
 import './App.css';
 import './table.css';
 import PropTypes from 'prop-types';
+// import BootstrapTable from 'react-bootstrap-table-next';
+
+
+
+
+// function clone(o){
+//   return JSON.parse(JSON.stringify(o));
+// }
+// function sort(e){
+//   const column = e.target.cellIndex;
+//   const data = clone(this.state.data);
+//   data.sort((a, b) => {
+//     if (a[column] === b[column]) {
+//       return 0;
+//     }
+//     return a[column] > b[column] ? 1 : -1;
+//     });
+//     this.setState({
+//       data,
+//     });
+   
+// }
 
 const Excel = function (props) {
-  console.log(props);
-  //const headers =[];
-  // for (const title of  props.headers){
-  //   headers.push(<th>{title}</th>)
-  // }
+
+ function sort(e){
+    console.log('sort')
+  }
+
   return (
     <div className="App">
       <table>
-        <thead>
+        <thead onClick={()=> say(props)}>
           <tr>{props.headers.map((title, ind) =>{
            // console.log(title, ind);
             return <th key={ind}>{title}</th>;
@@ -37,16 +59,22 @@ const Excel = function (props) {
           
     </div>
   );
+  function say(){
+    console.log(props);
+  }
 }
 
 
 
 Excel.propTypes = {
-  headers: PropTypes.arrayOf(PropTypes.string),
+  headers: PropTypes.arrayOf(PropTypes.number),
+  
   initialData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
 };
 
-const headers = [100, 'Author', 'Language', 'Published',  'Sales'];
+
+
+const headers = ['Book', 'Author', 'Language', 'Published',  'Sales'];
 const data = [
   [
     'A Tale of Two Cities',
