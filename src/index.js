@@ -9,12 +9,13 @@ import PropTypes from 'prop-types';
 
 
 
+// функция clone() способ глубокого копирования на скорую руку с помощью кодирования/декодирования JSON:
+function clone(o){
+  return JSON.parse(JSON.stringify(o));
+}
 
-// function clone(o){
-//   return JSON.parse(JSON.stringify(o));
-// }
 // function sort(e){
-//   const column = e.target.cellIndex;
+//   const column = e.target.cellidxex;
 //   const data = clone(this.state.data);
 //   data.sort((a, b) => {
 //     if (a[column] === b[column]) {
@@ -28,46 +29,70 @@ import PropTypes from 'prop-types';
    
 // }
 
-const Excel = function (props) {
 
- function sort(e){
-    console.log('sort')
+function Excel ({headers, initialData}) {
+  const [data, setData] = React.useState(initialData);
+  const [sorting, setSorting] = React.useState({
+    column: null,
+    descending: false
+  });
+
+  function sort(e){
+    const column = e.target.cellIndex;
+    const descending = sorting.column === column && !sorting.descending;
+    const dataCopy = clone(data);
+    dataCopy.sort((a,b) =>{
+      if (a[column] === b[column]){
+        return 0;
+      }
+      return descending
+      ? a[column] < b[column]
+        ? 1
+        : -1
+      : a[column] > b[column]
+        ? 1
+        : -1;
+
+    })
+    console.log('!!!!!!!!!!!!');
+    setData(dataCopy);
+    setSorting({column, descending});
   }
-
   return (
     <div className="App">
       <table>
-        <thead onClick={()=> say(props)}>
-          <tr>{props.headers.map((title, ind) =>{
-           // console.log(title, ind);
-            return <th key={ind}>{title}</th>;
+        <thead onClick ={sort}>
+          <tr>
+            {headers.map((title, idx) => {
+            // console.log('title, idx ', title, idx);
+            if (sorting.column === idx){
+              title += sorting.descending ? '\u2191' : '\u2193';
+            }
+           return <th key={idx}>{title}</th>
           })}
           </tr>
-         
         </thead>
         <tbody>
-          {props.initialData.map((row, ind) => (
-            <tr key={ind}>
-            {row.map((cell, ind) => (
-              <td key={ind}>{cell}</td>
+          {data.map((row, idx) => {
+            console.log('row, idx ', row, idx);
+            // row - ряд, idx - индекс ряда
+            return <tr key={idx}>
+                {row.map((cell, idx) => (
+              // cell - конкретная ячейка ряда, idx - в ряду
+               <td key={idx}>{cell}</td>
             ))}
           </tr>
-          ))}
+          })}
         </tbody>
-        
       </table>
-          
     </div>
   );
-  function say(){
-    console.log(props);
-  }
 }
 
 
-
+//проверка типов
 Excel.propTypes = {
-  headers: PropTypes.arrayOf(PropTypes.number),
+  headers: PropTypes.arrayOf(PropTypes.string),
   
   initialData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
 };
@@ -76,47 +101,18 @@ Excel.propTypes = {
 
 const headers = ['Book', 'Author', 'Language', 'Published',  'Sales'];
 const data = [
-  [
-    'A Tale of Two Cities',
-    'Charles Dickens',
-    'English',
-    '1859',
-    '200 million',
-  ],
-  [
-    'Le Petit Prince (The Little Prince)',
-    'Antoine de Saint-Exupéry',
-    'French',
-    '1943',
-    '150 million',
-  ],
-  [
-    "Harry Potter and the Philosopher's Stone",
-    'J. K. Rowling',
-    'English',
-    '1997',
-    '120 million',
-  ],
-  [
-    'And Then There Were None',
-    'Agatha Christie',
-    'English',
-    '1939',
-    '100 million',
-  ],
-  [
-    'Dream of the Red Chamber',
-    'Cao Xueqin',
-    'Chinese',
-    '1791',
-    '100 million',
-  ],
-  ['The Hobbit', 'J. R. R. Tolkien', 'English', '1937', '100 million'],
+  [     'A Tale of Two Cities',     'Charles Dickens',     'English',     '1859',     '200 million',   ],
+  [     'Le Petit Prince (The Little Prince)',     'Antoine de Saint-Exupéry',     'French',     '1943',     '150 million',   ],
+  [     "Harry Potter and the Philosopher's Stone",     'J. K. Rowling',     'English',     '1997',      '120 million',   ],
+  [     'And Then There Were None',     'Agatha Christie',     'English',     '1939',     '100 million',   ],
+  [     'Dream of the Red Chamber',     'Cao Xueqin',     'Chinese',     '1791',     '100 million',   ],
+  [     'The Hobbit', 'J. R. R. Tolkien', 'English', '1937', '100 million'],
 ];
+
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Excel headers = {headers} initialData = {data} />
+    <Excel headers={headers} initialData={data}/>
 );
-
