@@ -14,28 +14,14 @@ function clone(o){
   return JSON.parse(JSON.stringify(o));
 }
 
-// function sort(e){
-//   const column = e.target.cellidxex;
-//   const data = clone(this.state.data);
-//   data.sort((a, b) => {
-//     if (a[column] === b[column]) {
-//       return 0;
-//     }
-//     return a[column] > b[column] ? 1 : -1;
-//     });
-//     this.setState({
-//       data,
-//     });
-   
-// }
-
-
+const useState = React.useState;
 function Excel ({headers, initialData}) {
-  const [data, setData] = React.useState(initialData);
-  const [sorting, setSorting] = React.useState({
+  const [data, setData] = useState(initialData);
+  const [sorting, setSorting] = useState({
     column: null,
     descending: false
   });
+  const [edit, setEdit] = useState(null);
 
   function sort(e){
     const column = e.target.cellIndex;
@@ -54,10 +40,28 @@ function Excel ({headers, initialData}) {
         : -1;
 
     })
-    console.log('!!!!!!!!!!!!');
+    console.log(dataCopy, {column, descending});
+    // обновить две части состояния с помощью новых значений:
     setData(dataCopy);
     setSorting({column, descending});
   }
+  function showEditor(e){
+    setEdit({
+      row: parseInt(e.target.parentNode.dataset.row, 10),
+      column: e.target.cellIndex,
+    });
+  }
+
+  function save(e){
+    e.preventDefault();
+    const input = e.target.firstChild;
+    const dataCopy = clone(data);
+    dataCopy[edit.row][edit.column] = input.value;
+    setEdit(null);
+    setData(dataCopy);
+
+  }
+
   return (
     <div className="App">
       <table>
@@ -72,17 +76,27 @@ function Excel ({headers, initialData}) {
           })}
           </tr>
         </thead>
-        <tbody>
-          {data.map((row, idx) => {
-            console.log('row, idx ', row, idx);
+        <tbody onDoubleClick={showEditor}>
+          {data.map((row, rowidx) => (
+            // console.log('row, idx ', row, idx);
             // row - ряд, idx - индекс ряда
-            return <tr key={idx}>
-                {row.map((cell, idx) => (
-              // cell - конкретная ячейка ряда, idx - в ряду
-               <td key={idx}>{cell}</td>
-            ))}
+            <tr key={rowidx} data-row={rowidx}>
+                {row.map((cell, columnidx) => {
+                  if (
+                    edit &&
+                    edit.row === rowidx &&
+                    edit.column === columnidx
+                  ) {
+                    cell = (
+                      <form onSubmit = {save}>
+                          <input type = 'text' defaultValue={cell} />
+                      </form>
+                    );
+                  }
+                return <td key={columnidx}>{cell}</td>
+                })}
           </tr>
-          })}
+          ))}
         </tbody>
       </table>
     </div>
