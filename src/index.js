@@ -11,17 +11,27 @@ import PropTypes from 'prop-types';
 
 // функция clone() способ глубокого копирования на скорую руку с помощью кодирования/декодирования JSON:
 function clone(o){
+  //JSON.stringify  возвращает JavaScript-значение, преобразованное в JSON-строку
+  //JSON.parse преобразует строку JSON в JavaScript объект
+  // console.log('1 ', JSON.stringify(o));
+  // console.log('2', JSON.parse(JSON.stringify(o)));
   return JSON.parse(JSON.stringify(o));
 }
 
 const useState = React.useState;
+
 function Excel ({headers, initialData}) {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState(
+    clone(initialData).map((row, idx) => row.concat(idx)),
+  );
   const [sorting, setSorting] = useState({
     column: null,
     descending: false
   });
+ 
   const [edit, setEdit] = useState(null);
+  const [search, setSearch] = useState(false);
+  const [preSearchData, setPreSearchData] = useState(null);
 
   function sort(e){
     const column = e.target.cellIndex;
@@ -40,30 +50,79 @@ function Excel ({headers, initialData}) {
         : -1;
 
     })
-    console.log(dataCopy, {column, descending});
+    console.log('dataCopy, {column, descending}', dataCopy, {column, descending});
     // обновить две части состояния с помощью новых значений:
     setData(dataCopy);
     setSorting({column, descending});
   }
+  // 
   function showEditor(e){
+    console.log('e.target.cellIndex ', e.target.cellIndex);
+    console.log('e.target.parentNode.dataset.row ',e.target.parentNode.dataset.row);
     setEdit({
       row: parseInt(e.target.parentNode.dataset.row, 10),
-      column: e.target.cellIndex,
+      column: e.target.cellIndex,    
     });
   }
-
+// 
   function save(e){
     e.preventDefault();
-    const input = e.target.firstChild;
-    const dataCopy = clone(data);
-    dataCopy[edit.row][edit.column] = input.value;
-    setEdit(null);
+    const input = e.target.firstChild;     console.log('input ', input);
+    const dataCopy = clone(data).map((row) => {
+      if(row[row.length -1] === edit.row){
+        row[edit.column] = input.value;
+      }
+      return row;
+    });
+    setEdit(null);  
     setData(dataCopy);
+    const preSearch = clone(preSearchData);
+    preSearch[edit.row][edit.column] = input.value;
+    setPreSearchData(preSearch);
 
   }
+  // 
+  function toggleSearch(){
+    if(search){
+      setData(preSearchData);
+      setSearch(false);
+      setPreSearchData(null);
+    } else{
+      setPreSearchData(data);
+      setSearch(true);
+    }
+  }
+
+  function filter(e){
+    const needle = e.target.value.toLowerCase();
+    if(!needle){
+      setData(preSearchData);
+      return;
+    }
+    const idx = e.target.dataset.idx;
+    const searchdata = preSearchData.filter((row) => {
+      return row[idx].toString().toLowerCase().indexOf(needle) > -1;
+    });
+    setData(searchdata);
+  }
+
+  const searchRow = !search ? null : (
+    <tr onChange={filter}>
+      {headers.map((_, idx) => (
+        <td key ={idx}>
+          <input type='text' data-idx = {idx} />
+        </td>
+      ))}
+    </tr>
+  );
 
   return (
     <div className="App">
+      <div className='toolbar'>
+        <button onClick ={toggleSearch}>
+          {search ? 'Hide search' : 'Show search'}
+        </button>
+      </div>
       <table>
         <thead onClick ={sort}>
           <tr>
@@ -77,14 +136,21 @@ function Excel ({headers, initialData}) {
           </tr>
         </thead>
         <tbody onDoubleClick={showEditor}>
-          {data.map((row, rowidx) => (
+          {searchRow}
+          {data.map((row) => {
             // console.log('row, idx ', row, idx);
             // row - ряд, idx - индекс ряда
-            <tr key={rowidx} data-row={rowidx}>
+            const recordId = row[row.length -1];
+            console.log('recordId ', recordId);
+            return(
+              <tr key={recordId} data-row={recordId}>
                 {row.map((cell, columnidx) => {
-                  if (
+                  if(columnidx === headers.length){
+                    return;
+                  }
+                  if (           
                     edit &&
-                    edit.row === rowidx &&
+                    edit.row === recordId &&
                     edit.column === columnidx
                   ) {
                     cell = (
@@ -95,8 +161,9 @@ function Excel ({headers, initialData}) {
                   }
                 return <td key={columnidx}>{cell}</td>
                 })}
-          </tr>
-          ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
