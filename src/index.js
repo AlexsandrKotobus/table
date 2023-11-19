@@ -35,8 +35,8 @@ function Excel ({headers, initialData}) {
 
   function sort(e){
     const column = e.target.cellIndex;
-    const descending = sorting.column === column && !sorting.descending;
     const dataCopy = clone(data);
+    const descending = sorting.column === column && !sorting.descending;
     dataCopy.sort((a,b) =>{
       if (a[column] === b[column]){
         return 0;
@@ -49,7 +49,7 @@ function Excel ({headers, initialData}) {
         ? 1
         : -1;
 
-    })
+    });
     console.log('dataCopy, {column, descending}', dataCopy, {column, descending});
     // обновить две части состояния с помощью новых значений:
     setData(dataCopy);
@@ -57,8 +57,8 @@ function Excel ({headers, initialData}) {
   }
   // 
   function showEditor(e){
-    console.log('e.target.cellIndex ', e.target.cellIndex);
-    console.log('e.target.parentNode.dataset.row ',e.target.parentNode.dataset.row);
+    // console.log('e.target.cellIndex ', e.target.cellIndex);
+    // console.log('e.target.parentNode.dataset.row ',e.target.parentNode.dataset.row);
     setEdit({
       row: parseInt(e.target.parentNode.dataset.row, 10),
       column: e.target.cellIndex,    
@@ -67,7 +67,8 @@ function Excel ({headers, initialData}) {
 // 
   function save(e){
     e.preventDefault();
-    const input = e.target.firstChild;     console.log('input ', input);
+    const input = e.target.firstChild;     
+    console.log('input ', input);
     const dataCopy = clone(data).map((row) => {
       if(row[row.length -1] === edit.row){
         row[edit.column] = input.value;
@@ -76,11 +77,50 @@ function Excel ({headers, initialData}) {
     });
     setEdit(null);  
     setData(dataCopy);
+
+    // if(preSearchData == null){
+    //   preSearchData = dataCopy;
+    //   console.log("preSearchData :::", preSearchData)
+    // }
+    
     const preSearch = clone(preSearchData);
-    preSearch[edit.row][edit.column] = input.value;
-    setPreSearchData(preSearch);
+    console.log('preSearch 1', preSearch);
+    //   console.log('preSearch ', preSearch);
+    //   console.log('dataCopy ', dataCopy);
+    //   console.log('data ', data);
+    if(preSearch == null){
+      console.log('preSearch = null')
+      dataCopy[edit.row][edit.column] = input.value;
+      setPreSearchData(dataCopy);
+
+    }else{
+      console.log('preSearch != null')
+      preSearch[edit.row][edit.column] = input.value;
+      setPreSearchData(preSearch);
+    }
+    // preSearch[edit.row][edit.column] = input.value;
+    // setPreSearchData(preSearch);
 
   }
+
+
+  // function save(e){
+  //   e.preventDefault(); //сброс поведения по умолчанию
+  //   const input = e.target.firstChild;
+  //   console.log('input ', input);
+  //   const dataCopy = clone(data);
+  //   dataCopy[edit.row][edit.column] = input.value;
+
+  //   console.log('input.value; ', input.value)
+  //   setEdit(null);  
+  //   setData(dataCopy);           // установка нового значения
+  //   //
+    
+  // }
+
+
+
+
   // 
   function toggleSearch(){
     if(search){
@@ -141,7 +181,7 @@ function Excel ({headers, initialData}) {
             // console.log('row, idx ', row, idx);
             // row - ряд, idx - индекс ряда
             const recordId = row[row.length -1];
-            console.log('recordId ', recordId);
+            // console.log('recordId ', recordId);
             return(
               <tr key={recordId} data-row={recordId}>
                 {row.map((cell, columnidx) => {
@@ -156,10 +196,13 @@ function Excel ({headers, initialData}) {
                     cell = (
                       <form onSubmit = {save}>
                           <input type = 'text' defaultValue={cell} />
+                          {/* {console.log('cell ', cell)}; */}
                       </form>
                     );
                   }
+                // console.log('cell olumnidx ', cell, columnidx);
                 return <td key={columnidx}>{cell}</td>
+
                 })}
               </tr>
             );
