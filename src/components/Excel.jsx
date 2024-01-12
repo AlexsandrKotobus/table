@@ -1,26 +1,9 @@
 import React, {useState} from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-// import App from './App';
-import './App.css';
-import './components/table.css';
-import PropTypes from 'prop-types';
-// import Excel from './components/Excel';
-// import ExampleParent from './components/ExampleParent'
+// import ReactDOM from 'react-dom/client';
+import './table.css';
+// import PropTypes from 'prop-types';
+import clone from './clone';
 
-import clone from './components/clone'
-
-import ExampleParent from './components/UseLayoutEffect'
-
-
-// // функция clone() способ глубокого копирования на скорую руку с помощью кодирования/декодирования JSON:
-// function clone(o){
-//   //JSON.stringify  возвращает JavaScript-значение, преобразованное в JSON-строку
-//   //JSON.parse преобразует строку JSON в JavaScript объект
-//   // console.log('1 ', JSON.stringify(o));
-//   // console.log('2', JSON.parse(JSON.stringify(o)));
-//   return JSON.parse(JSON.stringify(o));
-// }
 
 
 function Excel ({headers, initialData}) {
@@ -120,7 +103,7 @@ function Excel ({headers, initialData}) {
   //   //
     
   // }
-
+ 
 
 
 
@@ -217,31 +200,27 @@ function Excel ({headers, initialData}) {
 }
 
 
-//проверка типов
-Excel.propTypes = {
-  headers: PropTypes.arrayOf(PropTypes.string),
+
+// //проверка типов
+// Excel.propTypes = {
+//   headers: PropTypes.arrayOf(PropTypes.string),
   
-  initialData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
-};
+//   initialData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string))
+// };
 
 
 
-// const headers = ['Book', 'Author', 'Language', 'Published',  'Sales'];
-// const data = [
-//   [     'A Tale of Two Cities',     'Charles Dickens',     'English',     '1859',     '200 million',   ],
-//   [     'Le Petit Prince (The Little Prince)',     'Antoine de Saint-Exupéry',     'French',     '1943',     '150 million',   ],
-//   [     "Harry Potter and the Philosopher's Stone",     'J. K. Rowling',     'English',     '1997',      '120 million',   ],
-//   [     'And Then There Were None',     'Agatha Christie',     'English',     '1939',     '100 million',   ],
-//   [     'Dream of the Red Chamber',     'Cao Xueqin',     'Chinese',     '1791',     '100 million',   ],
-//   [     'The Hobbit', 'J. R. R. Tolkien', 'English', '1937', '100 million'],
-// ];
-
-// 
+const headers = ['Book', 'Author', 'Language', 'Published',  'Sales'];
+const data = [
+  [     'A Tale of Two Cities',     'Charles Dickens',     'English',     '1859',     '200 million',   ],
+  [     'Le Petit Prince (The Little Prince)',     'Antoine de Saint-Exupéry',     'French',     '1943',     '150 million',   ],
+  [     "Harry Potter and the Philosopher's Stone",     'J. K. Rowling',     'English',     '1997',      '120 million',   ],
+  [     'And Then There Were None',     'Agatha Christie',     'English',     '1939',     '100 million',   ],
+  [     'Dream of the Red Chamber',     'Cao Xueqin',     'Chinese',     '1791',     '100 million',   ],
+  [     'The Hobbit', 'J. R. R. Tolkien', 'English', '1937', '100 million'],
+];
 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-    // <Excel headers={headers} initialData={data}/>
-    //  
-    <ExampleParent/>
-);
+
+
+export default Excel;
